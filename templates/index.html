@@ -1,0 +1,96 @@
+{% extends 'layout.html' %} {% block content %}
+
+<form
+  id="predictImageForm"
+  action=""
+  method="POST"
+  enctype="multipart/form-data"
+>
+  <div class="mb-3">
+    <label for="formFile" class="form-label"
+      >Select the mamography image:</label
+    >
+    <input
+      class="form-control"
+      type="file"
+      name="predictImage"
+      id="formFile"
+      accept="image/*"
+      required="required"
+    />
+  </div>
+
+  <input type="submit" value="Predict Image" class="btn btn-secondary btn-lg" />
+</form>
+
+<div id="progress-bar">
+  <div id="progress"></div>
+</div>
+
+<div id="result-container"></div>
+
+{% endblock %} {% block customjs %}
+
+<script>
+  $(document).ready(function () {
+    $('#predictImageForm').submit(function (event) {
+      $('#progress-bar').css('display', 'block');
+      event.preventDefault();
+      var form = $(this);
+      var formData = new FormData(form[0]);
+
+      // Mostrar el contenedor de carga
+      $('#loading-container').show();
+
+      // Obtener la barra de progreso
+      var progressBar = $('#progress');
+
+      // Establecer el ancho de la barra de progreso en 0 al inicio
+      progressBar.css('width', '0%');
+
+      // Enviar solicitud AJAX para realizar la predicción
+      $.ajax({
+        url: form.attr('action'),
+        type: form.attr('method'),
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        xhr: function () {
+          var xhr = new window.XMLHttpRequest();
+          xhr.upload.addEventListener('progress', function (event) {
+            if (event.lengthComputable) {
+              var percentComplete = (event.loaded / event.total) * 100;
+              progressBar.css('width', percentComplete + '%');
+            }
+          });
+          return xhr;
+        },
+        success: function (response) {
+          // Ocultar el contenedor de carga
+          $('#loading-container').hide();
+
+          // Actualizar el contenido del div de resultados con la respuesta del servidor
+          $('#result-container').html(response.prediction);
+
+          // Establecer la barra de progreso en 100% después de la respuesta exitosa
+          progressBar.css('width', '100%');
+          $('#progress-bar').css('display', 'none');
+        },
+        error: function () {
+          // En caso de error, mostrar un mensaje de error
+          $('#result-container').html('Error occurred during prediction.');
+
+          // Establecer la barra de progreso en 0% en caso de error
+          progressBar.css('width', '0%');
+          $('#progress-bar').css('display', 'none');
+        },
+        complete: function () {
+          // Ocultar el contenedor de carga en caso de éxito o error
+          $('#loading-container').hide();
+        },
+      });
+    });
+  });
+</script>
+{% endblock %}
