@@ -4,8 +4,8 @@ import warnings
 from datetime import datetime
 
 # Custom Imports
-from app.src.data.preprocess_images import preprocess_image
-from app.src.models.predict import denseNet201_Predict
+from app.src.data.preprocess_images import *
+from app.src.models.predict import *
 from app.src.utils.loadmodel import *
 
 # Remove warnings
@@ -34,13 +34,42 @@ def root():
             image = request.files['predictImage']
             processed_image = preprocess_image(image)
 
-            prediction = denseNet201_Predict(processed_image, densenet_model)
+            # Classic CNN Prediction
+            processed_classic_cnn_image = processed_classic_cnn_image_function(
+                image)
+            classic_cnn_prediction = classicCNN_Predict(
+                data=processed_classic_cnn_image, model_path=classic_cnn_path)
 
-            prediction_list = prediction.tolist()
+            classic_cnn_result = {
+                'prediction': classic_cnn_prediction
+            }
 
-            print(prediction_list)
+            # ResNet50 Prediction
+            resnet50_predition = resnet50_Predict(
+                data=processed_image, model=resenet50_model)
+            resnet50_result = {
+                'prediction': resnet50_predition
+            }
 
-            return jsonify({'prediction': prediction_list})
+            # DenseNet201 Prediction
+            densenet201_prediction = denseNet201_Predict(
+                data=processed_image, model=densenet_model)
+            densenet201_result = {
+                'prediction': densenet201_prediction
+            }
+
+            result = {
+                'classic_cnn': classic_cnn_result,
+                'resnet50': resnet50_result,
+                'densenet201': densenet201_result
+            }
+
+            return jsonify(
+                {
+                    'result': result,
+                    'image': rescale_image(image_path=image)
+                }
+            )
 
     return render_template(
         'index.html'
