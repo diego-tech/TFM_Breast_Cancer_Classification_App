@@ -28,7 +28,38 @@
 </div>
 
 <div id="result-container"></div>
+<img id="reescaled_image" alt="" />
+<div class="card-group mt-4">
+  <div class="card" style="width: 18rem">
+    <div class="card-body">
+      <h5 class="card-title">Classic CNN</h5>
+      <p class="card-text">
+        <span class="value">Valor 1:</span>
+        <span class="value">10 Valor 2:</span> <span class="value">20</span>
+      </p>
+    </div>
+  </div>
 
+  <div class="card" style="width: 18rem">
+    <div class="card-body">
+      <h5 class="card-title">ResNet50</h5>
+      <p class="card-text">
+        <span class="value">Valor 1:</span>
+        <span class="value">30 Valor 2:</span> <span class="value">40</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="width: 18rem">
+    <div class="card-body">
+      <h5 class="card-title">DenseNet201</h5>
+      <p class="card-text">
+        <span class="value">Valor 1:</span>
+        <span class="value">50 Valor 2:</span> <span class="value">60</span>
+      </p>
+    </div>
+  </div>
+</div>
 {% endblock %} {% block customjs %}
 
 <script>
@@ -70,8 +101,16 @@
           // Ocultar el contenedor de carga
           $('#loading-container').hide();
 
+          // Obtener la imagen reescalada en formato base64
+          var imagenReescaladaBase64 =
+            'data:image/jpeg;base64,' + response.image;
+
+          // Establecer la imagen en la etiqueta de imagen
+          $('#reescaled_image').attr('src', imagenReescaladaBase64);
+
+          console.log(response);
           // Actualizar el contenido del div de resultados con la respuesta del servidor
-          $('#result-container').html(response.prediction);
+          //$('#result-container').html(response.prediction);
 
           // Establecer la barra de progreso en 100% después de la respuesta exitosa
           progressBar.css('width', '100%');
