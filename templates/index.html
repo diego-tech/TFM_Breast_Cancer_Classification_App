@@ -1,23 +1,9 @@
 {% extends 'layout.html' %} {% block content %}
 
-<form
-  id="predictImageForm"
-  action=""
-  method="POST"
-  enctype="multipart/form-data"
->
+<form id="predictImageForm" action="" method="POST" enctype="multipart/form-data">
   <div class="mb-3">
-    <label for="formFile" class="form-label"
-      >Select the mamography image:</label
-    >
-    <input
-      class="form-control"
-      type="file"
-      name="predictImage"
-      id="formFile"
-      accept="image/*"
-      required="required"
-    />
+    <label for="formFile" class="form-label">Select the mamography image:</label>
+    <input class="form-control" type="file" name="predictImage" id="formFile" accept="image/*" required="required" />
   </div>
 
   <input type="submit" value="Predict Image" class="btn btn-secondary btn-lg" />
@@ -27,37 +13,76 @@
   <div id="progress"></div>
 </div>
 
-<div id="result-container"></div>
-<img id="reescaled_image" alt="" />
-<div class="card-group mt-4">
-  <div class="card" style="width: 18rem">
-    <div class="card-body">
-      <h5 class="card-title">Classic CNN</h5>
-      <p class="card-text">
-        <span class="value">Valor 1:</span>
-        <span class="value">10 Valor 2:</span> <span class="value">20</span>
-      </p>
+<div id="result-container">
+  <div class="card-group mt-4">
+    <div class="card" style="width: 18rem">
+      <div class="card-body">
+        <h5 class="card-title">Classic CNN</h5>
+        <p class="card-text">
+        <table class="table table-bordered text-center">
+          <thead class="thead-light">
+            <tr>
+              <th>Predicted Label</th>
+              <th>Predicted Average</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td id="classicCNN_predicted_label"></td>
+              <td id="classicCNN_predicted_average"></td>
+            </tr>
+          </tbody>
+        </table>
+        </p>
+      </div>
+    </div>
+
+    <div class="card" style="width: 18rem">
+      <div class="card-body">
+        <h5 class="card-title">ResNet50</h5>
+        <p class="card-text">
+        <table class="table table-bordered text-center">
+          <thead class="thead-light">
+            <tr>
+              <th>Predicted Label</th>
+              <th>Predicted Average</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td id="ResNet50_predicted_label"></td>
+              <td id="ResNet50_predicted_average"></td>
+            </tr>
+          </tbody>
+        </table>
+        </p>
+      </div>
+    </div>
+
+    <div class="card" style="width: 18rem">
+      <div class="card-body">
+        <h5 class="card-title">DenseNet201</h5>
+        <p class="card-text">
+        <table class="table table-bordered text-center">
+          <thead class="thead-light">
+            <tr>
+              <th>Predicted Label</th>
+              <th>Predicted Average</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td id="DenseNet201_predicted_label"></td>
+              <td id="DenseNet201_predicted_average"></td>
+            </tr>
+          </tbody>
+        </table>
+        </p>
+      </div>
     </div>
   </div>
-
-  <div class="card" style="width: 18rem">
-    <div class="card-body">
-      <h5 class="card-title">ResNet50</h5>
-      <p class="card-text">
-        <span class="value">Valor 1:</span>
-        <span class="value">30 Valor 2:</span> <span class="value">40</span>
-      </p>
-    </div>
-  </div>
-
-  <div class="card" style="width: 18rem">
-    <div class="card-body">
-      <h5 class="card-title">DenseNet201</h5>
-      <p class="card-text">
-        <span class="value">Valor 1:</span>
-        <span class="value">50 Valor 2:</span> <span class="value">60</span>
-      </p>
-    </div>
+  <div class="image-container">
+    <img class="mt-5" id="reescaled_image" alt="" />
   </div>
 </div>
 {% endblock %} {% block customjs %}
@@ -70,16 +95,12 @@
       var form = $(this);
       var formData = new FormData(form[0]);
 
-      // Mostrar el contenedor de carga
       $('#loading-container').show();
 
-      // Obtener la barra de progreso
       var progressBar = $('#progress');
 
-      // Establecer el ancho de la barra de progreso en 0 al inicio
       progressBar.css('width', '0%');
 
-      // Enviar solicitud AJAX para realizar la predicción
       $.ajax({
         url: form.attr('action'),
         type: form.attr('method'),
@@ -98,38 +119,117 @@
           return xhr;
         },
         success: function (response) {
-          // Ocultar el contenedor de carga
           $('#loading-container').hide();
 
-          // Obtener la imagen reescalada en formato base64
           var imagenReescaladaBase64 =
             'data:image/jpeg;base64,' + response.image;
 
-          // Establecer la imagen en la etiqueta de imagen
           $('#reescaled_image').attr('src', imagenReescaladaBase64);
 
-          console.log(response);
-          // Actualizar el contenido del div de resultados con la respuesta del servidor
-          //$('#result-container').html(response.prediction);
+          // Set Values in Classic CNN
+          $('#classicCNN_predicted_label').text(response.result.classic_cnn.prediction.predicted_label)
+          $('#classicCNN_predicted_average').text(parseFloat(response.result.classic_cnn.prediction.prediction_average).toFixed(5))
 
-          // Establecer la barra de progreso en 100% después de la respuesta exitosa
+          // Set Values ResNet50
+          $('#ResNet50_predicted_label').text(response.result.resnet50.prediction.predicted_label)
+          $('#ResNet50_predicted_average').text(parseFloat(response.result.resnet50.prediction.prediction_average).toFixed(5))
+
+          // DensetNet201
+          $('#DenseNet201_predicted_label').text(response.result.densenet201.prediction.predicted_label)
+          $('#DenseNet201_predicted_average').text(parseFloat(response.result.densenet201.prediction.prediction_average).toFixed(5))
+
           progressBar.css('width', '100%');
           $('#progress-bar').css('display', 'none');
+
+          $("#result-container").show();
         },
         error: function () {
-          // En caso de error, mostrar un mensaje de error
           $('#result-container').html('Error occurred during prediction.');
 
-          // Establecer la barra de progreso en 0% en caso de error
           progressBar.css('width', '0%');
           $('#progress-bar').css('display', 'none');
         },
         complete: function () {
-          // Ocultar el contenedor de carga en caso de éxito o error
           $('#loading-container').hide();
         },
       });
     });
+
+    /*Size is  set in pixels... supports being written as: '250px' */
+    var magnifierSize = 250;
+
+    /*How many times magnification of image on page.*/
+    var magnification = 4;
+
+    function magnifier() {
+      this.magnifyImg = function (ptr, magnification, magnifierSize) {
+        var $pointer;
+        if (typeof ptr == "string") {
+          $pointer = $(ptr);
+        } else if (typeof ptr == "object") {
+          $pointer = ptr;
+        }
+
+        if (!($pointer.is('img'))) {
+          alert('Object must be image.');
+          return false;
+        }
+
+        magnification = +(magnification);
+
+        $pointer.hover(function () {
+          $(this).css('cursor', 'none');
+          $('.magnify').show();
+          //Setting some variables for later use
+          var width = $(this).width();
+          var height = $(this).height();
+          var src = $(this).attr('src');
+          var imagePos = $(this).offset();
+          var image = $(this);
+
+          if (magnifierSize == undefined) {
+            magnifierSize = '150px';
+          }
+
+          $('.magnify').css({
+            'background-size': width * magnification + 'px ' + height * magnification + "px",
+            'background-image': 'url("' + src + '")',
+            'width': magnifierSize,
+            'height': magnifierSize
+          });
+
+          //Setting a few more...
+          var magnifyOffset = +($('.magnify').width() / 2);
+          var rightSide = +(imagePos.left + $(this).width());
+          var bottomSide = +(imagePos.top + $(this).height());
+
+          $(document).mousemove(function (e) {
+            if (e.pageX < +(imagePos.left - magnifyOffset / 6) || e.pageX > +(rightSide + magnifyOffset / 6) || e.pageY < +(imagePos.top - magnifyOffset / 6) || e.pageY > +(bottomSide + magnifyOffset / 6)) {
+              $('.magnify').hide();
+              $(document).unbind('mousemove');
+            }
+            var backgroundPos = "" - ((e.pageX - imagePos.left) * magnification - magnifyOffset) + "px " + -((e.pageY - imagePos.top) * magnification - magnifyOffset) + "px";
+            $('.magnify').css({
+              'left': e.pageX - magnifyOffset,
+              'top': e.pageY - magnifyOffset,
+              'background-position': backgroundPos
+            });
+          });
+        }, function () {
+
+        });
+      };
+
+      this.init = function () {
+        $('body').prepend('<div class="magnify"></div>');
+      }
+
+      return this.init();
+    }
+
+    var magnify = new magnifier();
+    magnify.magnifyImg('img', magnification, magnifierSize);
+
   });
 </script>
 {% endblock %}

@@ -1,7 +1,7 @@
 import os
 from tensorflow import keras
 
-densenet_model_path = os.path.join(os.getcwd(), 'model_data', 'DenseNet201_Model_30.h5')
+densenet_model_path = os.path.join(os.getcwd(), 'model_data', 'weights.best_30.hdf5')
 densenet_model = keras.models.load_model(densenet_model_path)
 
 resnet50_model_path = os.path.join(os.getcwd(), 'model_data', 'ResNet50__30.h5')

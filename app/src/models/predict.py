@@ -1,14 +1,13 @@
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.optim as optim
 import torch.nn.functional as F
 
 
 def denseNet201_Predict(data, model):
     result = {}
     input_array = np.expand_dims(data, axis=0)
-
+    
     predictions = model.predict(input_array)
 
     label_names = ['Benign', 'Evil']
@@ -87,7 +86,7 @@ def classicCNN_Predict(data, model_path):
             0, 3, 1, 2).type(torch.FloatTensor)
         predictions = loaded_model(inputs)
 
-    label_names = ['Evil', 'Benign']
+    label_names = ['Benign', 'Evil']
 
     predicted_label = label_names[np.argmax(predictions)]
 

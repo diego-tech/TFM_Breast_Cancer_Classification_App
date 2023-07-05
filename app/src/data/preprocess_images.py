@@ -3,32 +3,17 @@ from PIL import Image
 from sklearn.preprocessing import MinMaxScaler
 from io import BytesIO
 import base64
+import cv2
 
 def preprocess_image(image_path):
-    # Cargar la imagen utilizando la biblioteca PIL
-    image = Image.open(image_path)
+    image = cv2.imdecode(np.fromstring(image_path.read(), np.uint8), cv2.IMREAD_COLOR)
+
+    if image is not None:
+        image = cv2.resize(image, (50, 50))
+
+        return image
     
-    # Redimensionar o recortar la imagen a 50x50 píxeles
-    image = image.resize((50, 50))
-    
-    # Convertir la imagen a modo RGB
-    image = image.convert('RGB')
-    
-    # Verificar la forma de la imagen
-    if image.size != (50, 50):
-        # Recortar la imagen si es necesario
-        left = (image.width - 50) // 2
-        top = (image.height - 50) // 2
-        right = left + 50
-        bottom = top + 50
-        image = image.crop((left, top, right, bottom))
-    
-    # Convertir la imagen a un array NumPy
-    image_array = np.array(image)
-    
-    # Normalizar los valores de los píxeles entre 0 y 1
-    image_array = image_array / 255.0
-    return image_array
+    return None
 
 def processed_classic_cnn_image_function(image_path):
     image = Image.open(image_path)
@@ -63,7 +48,7 @@ def rescale_image(image_path):
     # Rescale the image while preserving its aspect ratio and increasing quality
     width, height = image.size
     aspect_ratio = width / height
-    new_width = 400
+    new_width = 600
     new_height = int(new_width / aspect_ratio)
     resized_image = image.resize((new_width, new_height), Image.ANTIALIAS)
     

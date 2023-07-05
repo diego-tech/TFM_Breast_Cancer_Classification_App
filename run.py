@@ -16,8 +16,6 @@ app = Flask(__name__)
 # When Running this app on the Local machine, default port to 8000
 port = int(os.getenv("PORT", 8080))
 
-# Context Processors
-
 
 @app.context_processor
 def date_now():
