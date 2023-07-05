@@ -13,7 +13,7 @@
   <div id="progress"></div>
 </div>
 
-<div id="result-container">
+<div id="result-container" class="clearfix">
   <div class="card-group mt-4">
     <div class="card" style="width: 18rem">
       <div class="card-body">
@@ -141,7 +141,7 @@
           progressBar.css('width', '100%');
           $('#progress-bar').css('display', 'none');
 
-          $("#result-container").show();
+          $("#result-container").css('display', 'block');
         },
         error: function () {
           $('#result-container').html('Error occurred during prediction.');
@@ -159,7 +159,7 @@
     var magnifierSize = 250;
 
     /*How many times magnification of image on page.*/
-    var magnification = 4;
+    var magnification = 2;
 
     function magnifier() {
       this.magnifyImg = function (ptr, magnification, magnifierSize) {
@@ -229,7 +229,6 @@
 
     var magnify = new magnifier();
     magnify.magnifyImg('img', magnification, magnifierSize);
-
   });
 </script>
 {% endblock %}

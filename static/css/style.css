@@ -1,11 +1,13 @@
 html,
 body {
   height: 100%;
+  margin: 0;
 }
 
 #sticky-footer {
-  position: absolute;
+  position: fixed;
   bottom: 0;
+  left: 0;
   width: 100%;
 }
 
@@ -43,6 +45,7 @@ input[type=number]:focus,
 
 #result-container {
   display: none;
+  margin-bottom: 5%;
 }
 
 .image-container {

@@ -50,7 +50,7 @@ def rescale_image(image_path):
     aspect_ratio = width / height
     new_width = 600
     new_height = int(new_width / aspect_ratio)
-    resized_image = image.resize((new_width, new_height), Image.ANTIALIAS)
+    resized_image = image.resize((new_width, new_height), Image.LANCZOS)
     
     # Encode the resized image as Base64
     buffered = BytesIO()
