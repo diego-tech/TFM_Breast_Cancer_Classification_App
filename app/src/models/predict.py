@@ -10,9 +10,9 @@ def denseNet201_Predict(data, model):
     
     predictions = model.predict(input_array)
 
-    label_names = ['Benign', 'Evil']
+    label_names = ['Evil', 'Benign']
 
-    predicted_label = label_names[np.argmax(predictions)]
+    predicted_label = label_names[0] if predictions > 0.5 else label_names[1]
 
     result = {
         'prediction_average': predictions.tolist(),
@@ -28,9 +28,9 @@ def resnet50_Predict(data, model):
 
     predictions = model.predict(input_array)
 
-    label_names = ['Benign', 'Evil']
+    label_names = ['Evil', 'Benign']
 
-    predicted_label = label_names[np.argmax(predictions)]
+    predicted_label = label_names[0] if predictions > 0.5 else label_names[1]
 
     result = {
         'prediction_average': predictions.tolist(),
@@ -86,9 +86,9 @@ def classicCNN_Predict(data, model_path):
             0, 3, 1, 2).type(torch.FloatTensor)
         predictions = loaded_model(inputs)
 
-    label_names = ['Benign', 'Evil']
+    label_names = ['Evil', 'Benign']
 
-    predicted_label = label_names[np.argmax(predictions)]
+    predicted_label = label_names[0] if predictions > 0.5 else label_names[1]
 
     result = {
         'prediction_average': predictions.numpy().tolist(),
